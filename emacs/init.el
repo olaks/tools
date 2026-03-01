@@ -33,11 +33,34 @@
   :bind
   ("<f9>" . treemacs))
 
+
+;;(use-package copilot
+;;  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+;;  :ensure t)
+;;(use-package copilot
+;;  :quelpa (copilot :fetcher github
+;;                   :repo "copilot-emacs/copilot.el"
+;;                   :branch "main"
+;;:files ("*.el")))
+
+;; Emacs 30+
+(use-package copilot
+  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+            :rev :newest
+            :branch "main"))
+
+
+
+
 ;; catppuccin-theme
 
-(load-theme 'catppuccin :no-confirm)
+;;(load-theme 'catppuccin :no-confirm)
+;;(setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
+;;(catppuccin-reload)
 
-
+;; solarize
+(load-theme 'solarized-dark t)
+;  (load-theme 'solarized-light t)
 ;; Meta keys
 (global-set-key "\M- " 'set-mark-command)
 (global-set-key "\M-\C-r" 'query-replace)
