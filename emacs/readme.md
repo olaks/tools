@@ -1,5 +1,5 @@
 
-#Emacs trickery and setup. Assume emacs 30+
+# Emacs trickery and setup. Assume emacs 30+
 
 ## Setup init.el to add your custom to default init file:
 
