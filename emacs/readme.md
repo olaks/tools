@@ -1,5 +1,5 @@
 ### Add custom init on startup
     export EMACSINIT="/path/to/custom/init.el"
 
-##Install themes
+## Install themes
 	  M-x package-install catpuccin-theme
