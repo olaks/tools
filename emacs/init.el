@@ -1,7 +1,7 @@
-;; Remove crap
+;;; -*- lexical-binding: t; -*-
 
 (setq first-time nil)
-(tool-bar-mode -1)
+(tool-bar-mode 0)
 (menu-bar-mode  1)
 (scroll-bar-mode 0)
 (setq inhibit-startup-message 1)
@@ -29,9 +29,14 @@
 (package-initialize)
 
 (use-package treemacs
+  :init
+  (treemacs-project-follow-mode)
+  (treemacs-follow-mode)
+  ;;(treemacs-)
   :ensure t
   :bind
   ("<f9>" . treemacs))
+
 
 
 ;;(use-package copilot
@@ -44,22 +49,26 @@
 ;;:files ("*.el")))
 
 ;; Emacs 30+
-(use-package copilot
-  :vc (:url "https://github.com/copilot-emacs/copilot.el"
-            :rev :newest
-            :branch "main"))
+;(use-package copilot
+;  :vc (:url "https://github.com/copilot-emacs/copilot.el"
+;            :rev :newest
+;            :branch "main"))
 
 
 
 
 ;; catppuccin-theme
 
-;;(load-theme 'catppuccin :no-confirm)
-;;(setq catppuccin-flavor 'frappe) ;; or 'latte, 'macchiato, or 'mocha
-;;(catppuccin-reload)
+(use-package catppuccin-theme
+  :ensure t)
+(load-theme 'catppuccin :no-confirm)
+(setq catppuccin-flavor 'mocha) ;; or 'latte, 'macchiato, or 'mocha
+(catppuccin-reload)
 
 ;; solarize
-(load-theme 'solarized-dark t)
+;(use-package solarized-theme
+;  :ensure t)
+;(load-theme 'solarized-dark t)
 ;  (load-theme 'solarized-light t)
 ;; Meta keys
 (global-set-key "\M- " 'set-mark-command)
@@ -78,10 +87,10 @@
 (global-set-key [f4] 'find-file)
 (global-set-key [f5] 'compile)
 (global-set-key [f6] 'visit-tags-table)
-(global-set-key [f7] 'folding-mode)
+;(global-set-key [f7] 'folding-mode)
 (global-set-key [f8] 'add-change-log-entry-other-window)
 ;;(global-set-key [f9] 'speedbar)
-(global-set-key [f12] 'make-frame)
+;(global-set-key [f12] 'make-frame)
 
 ;; Control keys
 ;; Keypad bindings
@@ -108,37 +117,91 @@
 ;; Misc
 (global-set-key [C-tab] "\C-q\t")   ; Control tab quotes a tab.
 (setq backup-by-copying-when-mismatch t)
-;;(set-background-color "black")
-;;(set-foreground-color "white")
-;;(set-cursor-color "white")
+
 ;;Don't  add the ~ backup files
 (setq make-backup-files nil)
 
 
+;; Show paren mode
+;;UI settings
 (display-time)
 (line-number-mode 1)
 (column-number-mode 1)
-;; Show paren mode
-
-;;UI settings
-
-
-(use-package rainbow-delimiters
-  :ensure t
-  :hook
-  (prog-mode . rainbow-delimiters-mode))
-
 (show-paren-mode 1)
 (setq show-paren-style 'expression)
-;; Electric pair and indent mode
-(electric-pair-mode 1)
-(electric-indent-mode 1)
+
+
+;; Useful tools
 
 (use-package flyspell
   :ensure t
   :config
   (setq ispell-program-name "aspell"))
 
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "multimarkdown")
+  :bind (:map markdown-mode-map
+              ("C-c C-e" . markdown-do)))
+
+(setq markdown-command "/usr/bin/pandoc")
+
+(use-package org
+  :config
+  (setq org-confirm-babel-evaluate nil)
+  (setq org-html-validation-link nil)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((org        . t)
+     (python     . t)
+     (perl       . t)
+     (C          . t)
+     (lisp       . t)
+     (scheme     . t)
+     (shell      . t)
+     (emacs-lisp . t)
+     (js         . t))))
+
+
+(use-package org-modern
+  :hook
+  (org-mode . org-modern-mode))
+
+
+;;;;;; Programming
+;;;  Git
+;; Magit
+;(use-package magit
+;:ensure t)
+
+
+; company mode
+(use-package company
+  :ensure t
+  :init
+  (global-company-mode)
+  (electric-pair-mode)
+  (rainbow-delimiters-mode)
+  )
+
+
+(setq company-idle-delay 0
+      company-minimum-prefix-length 2)
+
+
+;; C++
+(defun my-c/c++-mode-hook ()
+  "C/C++ mode hook."
+  (setq c-basic-offset 4)
+  (c-set-offset 'substatement-open 0)
+  (eglot-ensure))
+
+(add-hook 'c-mode-hook 'my-c/c++-mode-hook)
+(add-hook 'c++-mode-hook 'my-c/c++-mode-hook)
+
+;; Python
+(setq python-shell-interpreter "/usr/bin/python3")
 
 ;; Treat 'y' or <CR> as yes, 'n' as no.
 (fset 'yes-or-no-p 'y-or-n-p)
