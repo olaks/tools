@@ -63,6 +63,41 @@
 ;            :branch "main"))
 
 
+;;https://github.com/Cranot/claude-code-guide
+
+(use-package claude-code
+  :ensure t
+  :vc ( :url "https://github.com/stevemolitor/claude-code.el" :rev :newest )
+  :bind-keymap ("C-c c" . claude-code-command-map))
+
+(use-package monet
+  :ensure t
+  :vc ( :url "https://github.com/stevemolitor/monet" :rev :newest ))
+
+;(use-package eat
+;  :ensure t)
+(add-to-list 'exec-path "/home/ola/.local/bin/")
+;(use-package vterm
+;  :ensure t)
+;(setq claude-code-terminal-backend 'vterm)
+;(setq claude-code-terminal-backend 'eat)
+;(setq cli2eli-terminal-backend 'auto)
+;;(setq cli2eli-terminal-backend 'eat)
+;;(setq cli2eli-terminal-backend 'term)
+;
+;https://github.com/manzaltu/claude-code-ide.el
+
+(use-package claude-code-ide
+  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
+  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  :config
+  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+
+;;(use-package claude-code-ide
+  ;; :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  ;; :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  ;; :config
+  ;; (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
 
 
 ;; catppuccin-theme
@@ -78,6 +113,11 @@
 ;  :ensure t)
 ;(load-theme 'solarized-dark t)
 ;  (load-theme 'solarized-light t)
+
+;; Use \C z as undo keys to avoid brainfucks
+(global-unset-key (kbd "C-z"))
+(global-set-key (kbd "C-z") 'undo)
+
 ;; Meta keys
 (global-set-key "\M- " 'set-mark-command)
 (global-set-key "\M-\C-r" 'query-replace)

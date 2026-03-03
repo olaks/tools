@@ -36,6 +36,7 @@ Lexical binding is supposed to make everything emacs faster..
 ## Theme
 
 Sample useful themes:
+[emacsthemes.com](https://emacsthemes.com/popular)
 
 https://github.com/catppuccin/emacs
 
@@ -89,6 +90,13 @@ TBD
 
 
 ### Other keybindings (sample)
+
+* Undo key...
+```
+;; Use \C z as undo keys to avoid brainfucks
+(global-unset-key (kbd "C-z"))
+(global-set-key (kbd "C-z") 'undo)
+```
 
 * Meta keys
 ```
@@ -259,6 +267,22 @@ Enabling copilot-mode
 To enable copilot-mode in programming buffers, add:
 ```
    (add-hook 'prog-mode-hook 'copilot-mode)
+```
+
+
+## Claude code
+
+See page below for reference. Setup on emacs 30 was painless.
+
+[claude-code-ide](https://github.com/manzaltu/claude-code-ide.el)
+
+```
+(use-package claude-code-ide
+  :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  :config
+  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+
 ```
 
 Setting Up Key Bindings
