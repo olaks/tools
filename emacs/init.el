@@ -37,7 +37,15 @@
   :bind
   ("<f9>" . treemacs))
 
+;; Nerd icons for treemacs
+(use-package treemacs-nerd-icons
+  :ensure t
+  :config
+  (treemacs-load-theme "nerd-icons"))
 
+;; Projectile integration for treemacs
+(use-package treemacs-projectile
+  :ensure t)
 
 ;;(use-package copilot
 ;;  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
@@ -172,8 +180,8 @@
 ;;;;;; Programming
 ;;;  Git
 ;; Magit
-;(use-package magit
-;:ensure t)
+(use-package magit
+  :ensure t)
 
 
 ; company mode

@@ -35,6 +35,12 @@ Lexical binding is supposed to make everything emacs faster..
 
 ## Theme
 
+Sample useful themes:
+
+https://github.com/catppuccin/emacs
+
+https://github.com/bbatsov/solarized-emacs
+
 ```
 (use-package catppuccin-theme
   :ensure t)
@@ -58,7 +64,29 @@ Tree layout file explorer for Emacs. I bind it to F9 key..
   :bind
   ("<f9>" . treemacs))
 
+
+;; Nerd icons for treemacs
+(use-package treemacs-nerd-icons
+  :ensure t
+  :config
+  (treemacs-load-theme "nerd-icons"))
+
+;; Projectile integration for treemacs
+(use-package treemacs-projectile
+  :ensure t)
 ```
+
+## tree-sitter
+
+https://tree-sitter.github.io/tree-sitter/using-parsers/1-getting-started.html
+
+Install with your package manager..
+
+	pacman -Syu tree-sitter
+
+TBD
+
+
 
 ### Other keybindings (sample)
 
@@ -184,17 +212,6 @@ In buffer completion framework, also enable electric pair and rainbow delimiters
 ```
 
 
-## Install themes
-
-https://github.com/catppuccin/emacs
-
-	  M-x package-install RET catpuccin-theme
-
-https://github.com/bbatsov/solarized-emacs
-
-	  M-x package-install RET solarized-theme
-
-
 ## Markdown
 
 Install [pandoc](https://pandoc.org/)
@@ -216,17 +233,19 @@ Then add to your config:
 
 ## Git
 I only managed to install magit manually..TODO figure out why
+Magit is a text-based user interface to Git.
 
 [melpa install](https://docs.magit.vc/magit/Installing-from-Melpa.html)
 
 
 [Youtube](https://www.youtube.com/watch?v=X_iX5US1_xE "https://www.youtube.com/watch?v=X_iX5US1_xE")
 
-
+```
 	M-x package-install RET magit RET
 
-
-
+	(use-package magit
+	  :ensure t)
+```
 
 ## Add copilot
 See https://deepwiki.com/copilot-emacs/copilot.el/1.1-installation
