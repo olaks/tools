@@ -255,6 +255,14 @@ Magit is a text-based user interface to Git.
 	  :ensure t)
 ```
 
+| magit-         |   |
+|:---------------|:--|
+| push-current   |   |
+| stage-modified |   |
+|                |   |
+
+
+
 ## Add copilot
 See https://deepwiki.com/copilot-emacs/copilot.el/1.1-installation
 
