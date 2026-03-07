@@ -1,67 +1,39 @@
 ;;; -*- lexical-binding: t; -*-
 
-(setq first-time nil)
 (tool-bar-mode 0)
 (menu-bar-mode  1)
 (scroll-bar-mode 0)
-(setq inhibit-startup-message 1)
+(setq inhibit-startup-message t)
+(setq inhibit-splash-screen t)
 
 ;; Setup window
- (setq frame-title-format
-	'("%b@" (:eval (or (file-remote-p default-directory 'host) system-name)) " — Emacs"))
+(setq frame-title-format
+      '("%b@" (:eval (or (file-remote-p default-directory 'host) system-name)) " — Emacs"))
 
-(setq inhibit-splash-screen t)
-(setq ingibit-startup-message t)
+;;; Packages
 
-;;Packages
+(require 'package)
+(setq package-archives '(("melpa" . "https://melpa.org/packages/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("elpa" . "https://elpa.gnu.org/packages/")))
+(package-initialize)
 
 (unless package-archive-contents
-(package-refresh-contents))
+  (package-refresh-contents))
 (unless (package-installed-p 'use-package)
   (package-install 'use-package))
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                       ("elpa" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
-
 (use-package treemacs
+  :ensure t
   :init
   (treemacs-project-follow-mode)
-  (treemacs-follow-mode)
-  ;;(treemacs-)
-  :ensure t
-  :bind
-  ("<f9>" . treemacs))
-
-;; Nerd icons for treemacs
-(use-package treemacs-nerd-icons
-  :ensure t
-  :config
-  (treemacs-load-theme "nerd-icons"))
+  (treemacs-follow-mode))
 
 ;; Projectile integration for treemacs
 (use-package treemacs-projectile
   :ensure t)
-
-;;(use-package copilot
-;;  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-;;  :ensure t)
-;;(use-package copilot
-;;  :quelpa (copilot :fetcher github
-;;                   :repo "copilot-emacs/copilot.el"
-;;                   :branch "main"
-;;:files ("*.el")))
-
-;; Emacs 30+
-;(use-package copilot
-;  :vc (:url "https://github.com/copilot-emacs/copilot.el"
-;            :rev :newest
-;            :branch "main"))
-
 
 ;;https://github.com/Cranot/claude-code-guide
 
@@ -84,37 +56,24 @@
 ;(setq cli2eli-terminal-backend 'auto)
 ;;(setq cli2eli-terminal-backend 'eat)
 ;;(setq cli2eli-terminal-backend 'term)
-;
+
 ;https://github.com/manzaltu/claude-code-ide.el
 
 (use-package claude-code-ide
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  :bind ("C-c C-'" . claude-code-ide-menu)
   :config
-  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
-
-;;(use-package claude-code-ide
-  ;; :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
-  ;; :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
-  ;; :config
-  ;; (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
-
+  (claude-code-ide-emacs-tools-setup))
 
 ;; catppuccin-theme
 
 (use-package catppuccin-theme
   :ensure t)
 (load-theme 'catppuccin :no-confirm)
-(setq catppuccin-flavor 'mocha) ;; or 'latte, 'macchiato, or 'mocha
+(setq catppuccin-flavor 'mocha)
 (catppuccin-reload)
 
-;; solarize
-;(use-package solarized-theme
-;  :ensure t)
-;(load-theme 'solarized-dark t)
-;  (load-theme 'solarized-light t)
-
-;; Use \C z as undo keys to avoid brainfucks
+;; Use C-z as undo
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "C-z") 'undo)
 
@@ -130,17 +89,15 @@
 
 ;; Function keys
 (global-set-key [f1] 'dired)
-(global-set-key [f2] 'dired-omit-toggle)
+(global-set-key [f2] 'dired-omit-mode)
 (global-set-key [f3] 'shell)
 (global-set-key [f4] 'find-file)
-(global-set-key [f5] 'compile)
+(global-set-key [f5] 'cmake-compile-with-preset)
+(global-set-key [S-f5] 'cmake-build-with-preset)
 (global-set-key [f6] 'visit-tags-table)
-;(global-set-key [f7] 'folding-mode)
 (global-set-key [f8] 'add-change-log-entry-other-window)
-;;(global-set-key [f9] 'speedbar)
-;(global-set-key [f12] 'make-frame)
+(global-set-key [f9] 'treemacs)
 
-;; Control keys
 ;; Keypad bindings
 (global-set-key [up] "\C-p")
 (global-set-key [down] "\C-n")
@@ -166,18 +123,32 @@
 (global-set-key [C-tab] "\C-q\t")   ; Control tab quotes a tab.
 (setq backup-by-copying-when-mismatch t)
 
-;;Don't  add the ~ backup files
+;; Don't add the ~ backup files
 (setq make-backup-files nil)
 
 
-;; Show paren mode
-;;UI settings
+;; UI settings
+(setq display-time-format "%Y-%m-%dT%H:%M")
+(setq display-time-default-load-average nil)
 (display-time)
 (line-number-mode 1)
 (column-number-mode 1)
 (show-paren-mode 1)
 (setq show-paren-style 'expression)
+(setq show-trailing-whitespace t)
 
+;; which-key for keybinding discovery
+(use-package which-key
+  :ensure t
+  :init (which-key-mode))
+
+;; Multiple cursors
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-c C-<" . mc/mark-all-like-this)))
 
 ;; Useful tools
 
@@ -217,36 +188,115 @@
   (org-mode . org-modern-mode))
 
 
-;;;;;; Programming
-;;;  Git
-;; Magit
+;;;; Programming
+
+;;; Git
 (use-package magit
   :ensure t)
 
+;; Projectile
+(use-package projectile
+  :ensure t
+  :init (projectile-mode +1)
+  :bind-keymap ("C-c p" . projectile-command-map)
+  :config
+  (setq projectile-project-search-path '("~/Documents/dev/")))
 
-; company mode
+;; Company mode
 (use-package company
   :ensure t
   :init
   (global-company-mode)
-  (electric-pair-mode)
-  (rainbow-delimiters-mode)
-  )
-
+  (electric-pair-mode))
 
 (setq company-idle-delay 0
       company-minimum-prefix-length 2)
 
 
-;; C++
+;;; C/C++
+
+;; Eglot with clangd
+(use-package eglot
+  :ensure t
+  :config
+  (add-to-list 'eglot-server-programs
+               '((c++-mode c++-ts-mode c-mode c-ts-mode) . ("clangd"
+                  "--background-index"
+                  "--clang-tidy"
+                  "--completion-style=detailed"
+                  "--header-insertion=iwyu"))))
+
+;; C/C++ mode hook
 (defun my-c/c++-mode-hook ()
   "C/C++ mode hook."
   (setq c-basic-offset 4)
   (c-set-offset 'substatement-open 0)
   (eglot-ensure))
 
-(add-hook 'c-mode-hook 'my-c/c++-mode-hook)
-(add-hook 'c++-mode-hook 'my-c/c++-mode-hook)
+(add-hook 'c-mode-hook #'my-c/c++-mode-hook)
+(add-hook 'c++-mode-hook #'my-c/c++-mode-hook)
+
+;; Tree-sitter support (Emacs 29+)
+(when (and (fboundp 'treesit-available-p) (treesit-available-p))
+  (add-to-list 'major-mode-remap-alist '(c-mode . c-ts-mode))
+  (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+  (setq c-ts-mode-indent-offset 4)
+  (add-hook 'c-ts-mode-hook #'eglot-ensure)
+  (add-hook 'c++-ts-mode-hook #'eglot-ensure))
+
+;; Treat .h files as C++
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+
+;; clang-format
+(use-package clang-format
+  :ensure t
+  :bind (:map c++-mode-map
+              ("C-c f" . clang-format-buffer)
+         :map c-mode-map
+              ("C-c f" . clang-format-buffer)))
+
+;; CMake
+(use-package cmake-mode
+  :ensure t)
+
+(defun cmake--read-presets ()
+  "Read available CMake presets from CMakePresets.json or CMakeUserPresets.json."
+  (let* ((root (or (projectile-project-root) default-directory))
+         (presets-file (or (let ((f (expand-file-name "CMakeUserPresets.json" root)))
+                            (when (file-exists-p f) f))
+                          (let ((f (expand-file-name "CMakePresets.json" root)))
+                            (when (file-exists-p f) f))))
+         (names '()))
+    (when presets-file
+      (let* ((json (json-read-file presets-file))
+             (configure (cdr (assoc 'configurePresets json))))
+        (dolist (preset (append configure nil))
+          (let ((name (cdr (assoc 'name preset))))
+            (when name (push name names))))))
+    (nreverse names)))
+
+(defun cmake-compile-with-preset ()
+  "Configure and build a CMake project, prompting for a preset."
+  (interactive)
+  (let* ((presets (cmake--read-presets))
+         (preset (if presets
+                     (completing-read "CMake preset: " presets nil nil)
+                   (read-string "CMake preset: ")))
+         (cmd (format "cmake --preset %s && cmake --build --preset %s"
+                      (shell-quote-argument preset)
+                      (shell-quote-argument preset))))
+    (compile cmd)))
+
+(defun cmake-build-with-preset ()
+  "Build a CMake project, prompting for a preset (skip configure)."
+  (interactive)
+  (let* ((presets (cmake--read-presets))
+         (preset (if presets
+                     (completing-read "CMake build preset: " presets nil nil)
+                   (read-string "CMake build preset: ")))
+         (cmd (format "cmake --build --preset %s"
+                      (shell-quote-argument preset))))
+    (compile cmd)))
 
 ;; Python
 (setq python-shell-interpreter "/usr/bin/python3")
@@ -256,48 +306,7 @@
 (define-key query-replace-map [return] 'act)
 (define-key query-replace-map [?\C-m] 'act)
 
-;; Pretty diff mode
-(autoload 'ediff-buffers "ediff" "Intelligent Emacs interface to diff" t)
-(autoload 'ediff-files "ediff" "Intelligent Emacs interface to diff" t)
-(autoload 'ediff-files-remote "ediff"
-  "Intelligent Emacs interface to diff")
-
-(if first-time
-    (setq auto-mode-alist
-      (append '(("\\.cpp$" . c++-mode)
-            ("\\.hpp$" . c++-mode)
-            ("\\.lsp$" . lisp-mode)
-            ("\\.scm$" . scheme-mode)
-            ("\\.pl$" . perl-mode)
-            ) auto-mode-alist)))
-
-;; Auto font lock mode
-(defvar font-lock-auto-mode-list
-  (list 'c-mode 'c++-mode 'c++-c-mode 'emacs-lisp-mode 'lisp-mode 'perl-mode 'scheme-mode)
-  "List of modes to always start in font-lock-mode")
-
-(defun font-lock-auto-mode-select ()
-  "Automatically select font-lock-mode if the current major mode is in font-lock-auto-mode-list"
-  (if (memq major-mode font-lock-auto-mode-list)
-      (progn
-    (font-lock-mode t))
-    )
-)
-(global-set-key [M-f1] 'font-lock-fontify-buffer)
-
-
-
-;; Complement to next-error
-(defun previous-error (n)
-  "Visit previous compilation error message and corresponding source code."
-  (interactive "p")
-  (next-error (- n)))
-
-(setq compile-command "cmake --build -S ./ -B build")
-
-
-
-;; Misc...
+;; Misc
 (transient-mark-mode 1)
 (setq mark-even-if-inactive t)
 (setq visible-bell nil)
@@ -308,19 +317,6 @@
 (put 'eval-expression 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
 (put 'set-goal-column 'disabled nil)
-(if (>= emacs-major-version 21)
-    (setq show-trailing-whitespace t))
-
-;; Elisp archive searching
-(autoload 'format-lisp-code-directory "lispdir" nil t)
-(autoload 'lisp-dir-apropos "lispdir" nil t)
-(autoload 'lisp-dir-retrieve "lispdir" nil t)
-(autoload 'lisp-dir-verify "lispdir" nil t)
-
-
-
-(setq font-lock-doc-string-face 'green)
-(add-hook 'find-file-hooks 'font-lock-auto-mode-select)
 
 ;; All done
 (message "All done, %s@%s %s" (user-login-name) (system-name) ".")

@@ -1,311 +1,182 @@
 
-# Emacs trickery and setup. Assume emacs 30+
+# Emacs Setup (Emacs 30+)
 
-## Setup init.el to add your custom to default init file:
+Custom Emacs configuration focused on C/C++ development with CMake, clangd, and tree-sitter.
 
-Run:
-	C-h v user-init-file
+## Quick Start
 
-Edit: (~/.emacs on my system)
-
-Add the following to the top:
-```
-	;;; -*- lexical-binding: t; -*-
-	(load-file "/home/ola/Documents/dev/tools/emacs/init.el")
-```
-Lexical binding is supposed to make everything emacs faster..
-
-## Install needed packages automatically when needed
-
-```
-(unless package-archive-contents
-(package-refresh-contents))
-(unless (package-installed-p 'use-package)
-  (package-install 'use-package))
-(require 'use-package)
-(setq use-package-always-ensure t)
-
-(require 'package)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                       ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                       ("elpa" . "https://elpa.gnu.org/packages/")))
-(package-initialize)
+Run `C-h v user-init-file` to find your init file (~/.emacs), then add:
+```elisp
+;;; -*- lexical-binding: t; -*-
+(load-file "/home/ola/Documents/dev/tools/emacs/init.el")
 ```
 
+## Packages
+
+Packages are auto-installed from MELPA, NonGNU ELPA, and GNU ELPA via `use-package`.
+
+| Package              | Purpose                                    |
+|:---------------------|:-------------------------------------------|
+| treemacs             | Tree file explorer (F9)                    |
+| treemacs-projectile  | Projectile integration for treemacs        |
+| projectile           | Project management (C-c p)                 |
+| magit                | Git interface                              |
+| company              | In-buffer completion                       |
+| eglot                | LSP client (clangd for C/C++)              |
+| clang-format         | C/C++ code formatting (C-c f)             |
+| cmake-mode           | CMake syntax support                       |
+| multiple-cursors     | Edit multiple lines/matches at once        |
+| which-key            | Keybinding discovery popups                |
+| flyspell             | Spell checking (aspell)                    |
+| markdown-mode        | Markdown editing (pandoc)                  |
+| org / org-modern     | Notes, literate programming, planning      |
+| catppuccin-theme     | Color theme (mocha variant)                |
+| claude-code          | Claude Code integration (C-c c)           |
+| claude-code-ide      | Claude Code IDE tools (C-c C-')           |
+| monet                | Monet utilities                            |
 
 ## Theme
 
-Sample useful themes:
-[emacsthemes.com](https://emacsthemes.com/popular)
+Using [catppuccin](https://github.com/catppuccin/emacs) mocha variant. Alternatives:
+- [emacsthemes.com](https://emacsthemes.com/popular)
+- [solarized-emacs](https://github.com/bbatsov/solarized-emacs)
 
-https://github.com/catppuccin/emacs
+## C/C++ Development
 
-https://github.com/bbatsov/solarized-emacs
+### LSP (eglot + clangd)
 
+Eglot is configured with clangd and the following flags:
+- `--background-index` — index project in background
+- `--clang-tidy` — enable clang-tidy diagnostics
+- `--completion-style=detailed` — detailed completion items
+- `--header-insertion=iwyu` — include-what-you-use header insertion
+
+Eglot starts automatically when opening C/C++ files.
+
+### Tree-sitter
+
+When tree-sitter grammars are available (Emacs 29+), C/C++ files automatically use `c-ts-mode` / `c++-ts-mode` for improved syntax highlighting and indentation.
+
+Install grammars: `M-x treesit-install-language-grammar` (select `c` and `cpp`).
+
+Or via your system package manager:
 ```
-(use-package catppuccin-theme
-  :ensure t)
-(load-theme 'catppuccin :no-confirm)
-(setq catppuccin-flavor 'mocha) ;; or 'latte, 'macchiato, or 'mocha
-(catppuccin-reload)
-```
-
-## treemacs
-
-Tree layout file explorer for Emacs. I bind it to F9 key..
-
-[treemacs](https://github.com/Alexander-Miller/treemacs)
-```
-(use-package treemacs
-  :init
-  (treemacs-project-follow-mode)
-  (treemacs-follow-mode)
-  ;;(treemacs-)
-  :ensure t
-  :bind
-  ("<f9>" . treemacs))
-
-
-;; Nerd icons for treemacs
-(use-package treemacs-nerd-icons
-  :ensure t
-  :config
-  (treemacs-load-theme "nerd-icons"))
-
-;; Projectile integration for treemacs
-(use-package treemacs-projectile
-  :ensure t)
+pacman -Syu tree-sitter
 ```
 
-## tree-sitter
+### Code formatting
 
-https://tree-sitter.github.io/tree-sitter/using-parsers/1-getting-started.html
+`clang-format` is bound to `C-c f` in C/C++ buffers. Place a `.clang-format` file in your project root to configure style.
 
-Install with your package manager..
+### `.h` files
 
-	pacman -Syu tree-sitter
+Header files (`.h`) are treated as C++ by default.
 
-TBD
+### Style
 
+- Indent: 4 spaces
+- Substatement braces at column 0
 
+### CMake Build
 
-### Other keybindings (sample)
+Two interactive commands read presets from `CMakePresets.json` or `CMakeUserPresets.json`:
 
-* Undo key...
-```
-;; Use \C z as undo keys to avoid brainfucks
-(global-unset-key (kbd "C-z"))
-(global-set-key (kbd "C-z") 'undo)
-```
+| Key     | Command                      | Action                     |
+|:--------|:-----------------------------|:---------------------------|
+| F5      | `cmake-compile-with-preset`  | Configure + build          |
+| Shift-F5| `cmake-build-with-preset`    | Build only (skip configure)|
 
-* Meta keys
-```
-(global-set-key "\M- " 'set-mark-command)
-(global-set-key "\M-\C-r" 'query-replace)
-(global-set-key "\M-r" 'replace-string)
-(global-set-key "\M-g" 'goto-line)
-(global-set-key "\M-h" 'help-command)
-```
-* dired
-```
-(add-hook 'dired-load-hook (function (lambda () (load "dired-x"))))
-(setq dired-omit-files-p t)
-```
-* Function keys
-```
-(global-set-key [f1] 'dired)
-(global-set-key [f2] 'dired-omit-toggle)
-(global-set-key [f3] 'shell)
-(global-set-key [f4] 'find-file)
-(global-set-key [f5] 'compile)
-(global-set-key [f6] 'visit-tags-table)
-;(global-set-key [f7] 'folding-mode)
-(global-set-key [f8] 'add-change-log-entry-other-window)
-;;(global-set-key [f9] 'speedbar)
-;(global-set-key [f12] 'make-frame)
-```
+Both prompt with completion for available preset names.
 
-* Control keys
-```
-;; Keypad bindings
-(global-set-key [up] "\C-p")
-(global-set-key [down] "\C-n")
-(global-set-key [left] "\C-b")
-(global-set-key [right] "\C-f")
-(global-set-key [home] "\C-a")
-(global-set-key [end] "\C-e")
-(global-set-key [prior] "\M-v")
-(global-set-key [next] "\C-v")
-(global-set-key [C-up] "\M-\C-b")
-(global-set-key [C-down] "\M-\C-f")
-(global-set-key [C-left] "\M-b")
-(global-set-key [C-right] "\M-f")
-(global-set-key [C-home] "\M-<")
-(global-set-key [C-end] "\M->")
-(global-set-key [C-prior] "\M-<")
-(global-set-key [C-next] "\M->")
-```
+## Keybindings
 
-*  Mouse
-```
-(global-set-key [mouse-3] 'imenu)
-```
+### Function Keys
 
+| Key  | Command                            |
+|:-----|:-----------------------------------|
+| F1   | dired (file manager)               |
+| F2   | dired-omit-mode (toggle junk files)|
+| F3   | shell                              |
+| F4   | find-file                          |
+| F5   | CMake configure + build (preset)   |
+| S-F5 | CMake build only (preset)          |
+| F6   | visit-tags-table                   |
+| F8   | add-change-log-entry               |
+| F9   | treemacs                           |
 
-## Org mode
+### Custom Keys
 
-Major mode for keeping notes, authoring documents, computational notebooks, literate programming, maintaining to-do lists, planning projects, and more — in a fast and effective plain text system.
+| Key       | Command          |
+|:----------|:-----------------|
+| C-z       | undo             |
+| M-SPC     | set-mark-command |
+| M-C-r     | query-replace    |
+| M-r       | replace-string   |
+| M-g       | goto-line        |
+| M-h       | help-command     |
+| C-c p     | projectile map   |
+| C-c c     | claude-code map  |
+| C-c C-'   | claude-code-ide  |
+| C-c f     | clang-format     |
+| C-S-c C-S-c | mc/edit-lines (multi-cursor on selected lines) |
+| C->       | mc/mark-next-like-this     |
+| C-<       | mc/mark-previous-like-this |
+| C-c C-<   | mc/mark-all-like-this      |
 
-```
-(use-package org
-  :config
-  (setq org-confirm-babel-evaluate nil)
-  (setq org-html-validation-link nil)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((org        . t)
-     (python     . t)
-     (perl       . t)
-     (C          . t)
-     (lisp       . t)
-     (scheme     . t)
-     (shell      . t)
-     (emacs-lisp . t)
-     (js         . t))))
+### Navigation (Keypad)
 
+| Key       | Action              |
+|:----------|:--------------------|
+| C-Home    | beginning of buffer |
+| C-End     | end of buffer       |
+| C-Left    | backward word       |
+| C-Right   | forward word        |
+| C-Up      | backward sexp       |
+| C-Down    | forward sexp        |
 
-(use-package org-modern
-  :hook
-  (org-mode . org-modern-mode))
+## UI Settings
 
-```
+- Mode line: ISO 8601 time display (`%Y-%m-%dT%H:%M`)
+- Parenthesis matching: expression highlighting
+- Trailing whitespace: visible and auto-deleted on save
+- No toolbar, no scrollbar, menu bar enabled
+- No backup files (`~`)
 
-## C/C++
+## Org Mode
 
-```
-(defun my-c/c++-mode-hook ()
-  "C/C++ mode hook."
-  (setq c-basic-offset 4)
-  (c-set-offset 'substatement-open 0)
-  (eglot-ensure))
+Babel languages enabled: org, python, perl, C, lisp, scheme, shell, emacs-lisp, js.
 
-(add-hook 'c-mode-hook 'my-c/c++-mode-hook)
-(add-hook 'c++-mode-hook 'my-c/c++-mode-hook)
-```
+## Git (Magit)
 
-## Python
+Open with `M-x magit` to see the status buffer.
 
-```
-TBD
-```
+### Typical commit + push workflow
 
+1. **Stage** — move cursor to a file and press `s`, or `S` to stage all
+2. **Commit** — press `c c`, type your message, then `C-c C-c` to finalize
+3. **Push** — press `p p` to push to the remote tracking branch
 
-## Company
+### Magit status buffer keys
 
-In buffer completion framework, also enable electric pair and rainbow delimiters.
+| Key       | Action                          |
+|:----------|:--------------------------------|
+| `s`       | Stage file at cursor            |
+| `S`       | Stage all                       |
+| `u`       | Unstage file at cursor          |
+| `c c`     | Commit                          |
+| `C-c C-c` | Finalize commit message         |
+| `C-c C-k` | Abort commit message            |
+| `p p`     | Push to remote                  |
+| `F p`     | Pull from remote                |
+| `l l`     | View log                        |
+| `d d`     | Diff                            |
+| `TAB`     | Expand/collapse diff for a file |
+| `g`       | Refresh status                  |
+| `q`       | Quit Magit buffer               |
 
-```
-(use-package company
-  :ensure t
-  :init
-  (global-company-mode)
-  (electric-pair-mode)
-  (rainbow-delimiters-mode)
-  )
+## Claude Code
 
+Two packages for Claude Code integration:
 
-(setq company-idle-delay 0
-      company-minimum-prefix-length 2)
-
-```
-
-
-## Markdown
-
-Install [pandoc](https://pandoc.org/)
-
-
-```
-(use-package markdown-mode
-  :ensure t
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "multimarkdown")
-  :bind (:map markdown-mode-map
-              ("C-c C-e" . markdown-do)))
-```
-Then add to your config:
-
-	(setq markdown-command "/usr/bin/pandoc")
-
-
-
-## Git
-I only managed to install magit manually..TODO figure out why
-Magit is a text-based user interface to Git.
-
-[melpa install](https://docs.magit.vc/magit/Installing-from-Melpa.html)
-
-
-[Youtube](https://www.youtube.com/watch?v=X_iX5US1_xE "https://www.youtube.com/watch?v=X_iX5US1_xE")
-
-```
-	M-x package-install RET magit RET
-
-	(use-package magit
-	  :ensure t)
-```
-
-| magit-         |   |
-|:---------------|:--|
-| push-current   |   |
-| stage-modified |   |
-|                |   |
-
-
-
-## Add copilot
-See https://deepwiki.com/copilot-emacs/copilot.el/1.1-installation
-
-    M-x copilot-login
-    M-x copilot-diagnose
-
-
-Enabling copilot-mode
-
-To enable copilot-mode in programming buffers, add:
-```
-   (add-hook 'prog-mode-hook 'copilot-mode)
-```
-
-
-## Claude code
-
-See page below for reference. Setup on emacs 30 was painless.
-
-[claude-code-ide](https://github.com/manzaltu/claude-code-ide.el)
-
-```
-(use-package claude-code-ide
-  :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
-  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
-  :config
-  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
-
-```
-
-Setting Up Key Bindings
-
-Set up key bindings for accepting completions:
-
-```
-(define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)
-(define-key copilot-completion-map (kbd "C-TAB") 'copilot-accept-completion-by-word)
-(define-key copilot-completion-map (kbd "C-<tab>") 'copilot-accept-completion-by-word)
-```
-
-You can also add bindings for cycling through completions:
-```
-(define-key copilot-completion-map (kbd "C-n") 'copilot-next-completion)
-(define-key copilot-completion-map (kbd "C-p") 'copilot-previous-completion)
-```
+- [claude-code.el](https://github.com/stevemolitor/claude-code.el) — `C-c c` prefix
+- [claude-code-ide.el](https://github.com/manzaltu/claude-code-ide.el) — `C-c C-'` menu with Emacs MCP tools
