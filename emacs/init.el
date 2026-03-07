@@ -94,7 +94,7 @@
 (global-set-key [f4] 'find-file)
 (global-set-key [f5] 'cmake-compile-with-preset)
 (global-set-key [S-f5] 'cmake-build-with-preset)
-(global-set-key [f6] 'visit-tags-table)
+;;(global-set-key [f6] 'visit-tags-table)
 (global-set-key [f8] 'add-change-log-entry-other-window)
 (global-set-key [f9] 'treemacs)
 
