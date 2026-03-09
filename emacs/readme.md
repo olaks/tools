@@ -30,15 +30,16 @@ Packages are auto-installed from MELPA, NonGNU ELPA, and GNU ELPA via `use-packa
 | flyspell             | Spell checking (aspell)                    |
 | markdown-mode        | Markdown editing (pandoc)                  |
 | org / org-modern     | Notes, literate programming, planning      |
-| catppuccin-theme     | Color theme (mocha variant)                |
+| zenburn-theme        | Color theme                                |
 | claude-code          | Claude Code integration (C-c c)           |
 | claude-code-ide      | Claude Code IDE tools (C-c C-')           |
 | monet                | Monet utilities                            |
 
 ## Theme
 
-Using [catppuccin](https://github.com/catppuccin/emacs) mocha variant. Alternatives:
+Using [zenburn](https://github.com/bbatsov/zenburn-emacs). Alternatives:
 - [emacsthemes.com](https://emacsthemes.com/popular)
+- [catppuccin](https://github.com/catppuccin/emacs)
 - [solarized-emacs](https://github.com/bbatsov/solarized-emacs)
 
 ## C/C++ Development
@@ -118,10 +119,20 @@ Both prompt with completion for available preset names.
 | C-c c     | claude-code map  |
 | C-c C-'   | claude-code-ide  |
 | C-c f     | clang-format     |
+| C-c m     | CLion-like multiple cursors (see below) |
 | C-S-c C-S-c | mc/edit-lines (multi-cursor on selected lines) |
 | C->       | mc/mark-next-like-this     |
 | C-<       | mc/mark-previous-like-this |
 | C-c C-<   | mc/mark-all-like-this      |
+
+### Multiple Cursors (CLion-like)
+
+To add cursors on adjacent lines (like CLion's Ctrl+Ctrl+arrows):
+
+1. `C-c m` — activates rectangular region mode
+2. Use `Up`/`Down` arrow keys to add cursors on adjacent lines
+3. Start typing — all cursors edit simultaneously
+4. `C-g` to exit multiple cursors mode
 
 ### Navigation (Keypad)
 

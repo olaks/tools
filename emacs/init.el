@@ -27,9 +27,10 @@
 
 (use-package treemacs
   :ensure t
-  :init
+  :config
   (treemacs-project-follow-mode)
-  (treemacs-follow-mode))
+  (treemacs-follow-mode)
+  (treemacs-filewatch-mode))
 
 ;; Projectile integration for treemacs
 (use-package treemacs-projectile
@@ -49,6 +50,7 @@
 ;(use-package eat
 ;  :ensure t)
 (add-to-list 'exec-path "/home/ola/.local/bin/")
+(setenv "PATH" (concat "/home/ola/.local/bin:" (getenv "PATH")))
 ;(use-package vterm
 ;  :ensure t)
 ;(setq claude-code-terminal-backend 'vterm)
@@ -67,11 +69,15 @@
 
 ;; catppuccin-theme
 
-(use-package catppuccin-theme
-  :ensure t)
-(load-theme 'catppuccin :no-confirm)
-(setq catppuccin-flavor 'mocha)
-(catppuccin-reload)
+;; (use-package catppuccin-theme
+;;   :ensure t)
+;; (load-theme 'catppuccin :no-confirm)
+;; (setq catppuccin-flavor 'mocha)
+;; (catppuccin-reload)
+
+(use-package zenburn-theme
+  :config
+  (load-theme 'zenburn t))
 
 ;; Use C-z as undo
 (global-unset-key (kbd "C-z"))
@@ -94,7 +100,8 @@
 (global-set-key [f4] 'find-file)
 (global-set-key [f5] 'cmake-compile-with-preset)
 (global-set-key [S-f5] 'cmake-build-with-preset)
-;;(global-set-key [f6] 'visit-tags-table)
+(global-set-key [f6] 'conan-install)
+;;(global-set-key [f7] 'visit-tags-table)
 (global-set-key [f8] 'add-change-log-entry-other-window)
 (global-set-key [f9] 'treemacs)
 
@@ -137,6 +144,15 @@
 (setq show-paren-style 'expression)
 (setq show-trailing-whitespace t)
 
+;; This makes Emacs automatically reload files when they change on disk.
+
+
+(global-auto-revert-mode 1)
+(setq auto-revert-interval 1)
+
+;; If you only  want it for specific modes or want it silent:
+;; (setq auto-revert-verbose nil)
+
 ;; which-key for keybinding discovery
 (use-package which-key
   :ensure t
@@ -148,7 +164,9 @@
   :bind (("C-S-c C-S-c" . mc/edit-lines)
          ("C->" . mc/mark-next-like-this)
          ("C-<" . mc/mark-previous-like-this)
-         ("C-c C-<" . mc/mark-all-like-this)))
+         ("C-c C-<" . mc/mark-all-like-this)
+         ;; CLion-like: press C-c m, then use arrow keys to add cursors on adjacent lines
+         ("C-c m" . set-rectangular-region-anchor)))
 
 ;; Useful tools
 
@@ -255,24 +273,50 @@
          :map c-mode-map
               ("C-c f" . clang-format-buffer)))
 
+;; ANSI colors in compilation buffer
+(require 'ansi-color)
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+
 ;; CMake
 (use-package cmake-mode
   :ensure t)
 
-(defun cmake--read-presets ()
-  "Read available CMake presets from CMakePresets.json or CMakeUserPresets.json."
-  (let* ((root (or (projectile-project-root) default-directory))
-         (presets-file (or (let ((f (expand-file-name "CMakeUserPresets.json" root)))
-                            (when (file-exists-p f) f))
-                          (let ((f (expand-file-name "CMakePresets.json" root)))
-                            (when (file-exists-p f) f))))
-         (names '()))
-    (when presets-file
-      (let* ((json (json-read-file presets-file))
+(defun conan-install ()
+  "Run conan install for the current project."
+  (interactive)
+  (let ((default-directory (or (projectile-project-root) default-directory)))
+    (compile "conan install . --build=missing -of=build")))
+
+(defun cmake--read-presets-from-file (file)
+  "Read configure preset names from FILE, following any includes."
+  (let ((names '()))
+    (when (file-exists-p file)
+      (let* ((dir (file-name-directory file))
+             (json (json-read-file file))
+             (includes (cdr (assoc 'include json)))
              (configure (cdr (assoc 'configurePresets json))))
+        ;; Recurse into included files
+        (dolist (inc (append includes nil))
+          (let ((inc-file (expand-file-name inc dir)))
+            (dolist (name (cmake--read-presets-from-file inc-file))
+              (unless (member name names)
+                (push name names)))))
+        ;; Collect presets from this file
         (dolist (preset (append configure nil))
           (let ((name (cdr (assoc 'name preset))))
-            (when name (push name names))))))
+            (when (and name (not (member name names)))
+              (push name names))))))
+    (nreverse names)))
+
+(defun cmake--read-presets ()
+  "Read available CMake presets, following includes."
+  (let* ((root (or (projectile-project-root) default-directory))
+         (names '()))
+    (dolist (file (list (expand-file-name "CMakeUserPresets.json" root)
+                        (expand-file-name "CMakePresets.json" root)))
+      (dolist (name (cmake--read-presets-from-file file))
+        (unless (member name names)
+          (push name names))))
     (nreverse names)))
 
 (defun cmake-compile-with-preset ()
