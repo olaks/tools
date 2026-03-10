@@ -1,6 +1,7 @@
 (tool-bar-mode 0)
 (menu-bar-mode  1)
 (scroll-bar-mode 0)
+(global-display-line-numbers-mode 1)
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
 
