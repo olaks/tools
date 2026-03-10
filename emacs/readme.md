@@ -15,25 +15,25 @@ Run `C-h v user-init-file` to find your init file (~/.emacs), then add:
 
 Packages are auto-installed from MELPA, NonGNU ELPA, and GNU ELPA via `use-package`.
 
-| Package              | Purpose                                    |
-|:---------------------|:-------------------------------------------|
-| treemacs             | Tree file explorer (F9)                    |
-| treemacs-projectile  | Projectile integration for treemacs        |
-| projectile           | Project management (C-c p)                 |
-| magit                | Git interface                              |
-| company              | In-buffer completion                       |
-| eglot                | LSP client (clangd for C/C++)              |
-| clang-format         | C/C++ code formatting (C-c f)             |
-| cmake-mode           | CMake syntax support                       |
-| multiple-cursors     | Edit multiple lines/matches at once        |
-| which-key            | Keybinding discovery popups                |
-| flyspell             | Spell checking (aspell)                    |
-| markdown-mode        | Markdown editing (pandoc)                  |
-| org / org-modern     | Notes, literate programming, planning      |
-| zenburn-theme        | Color theme                                |
-| claude-code          | Claude Code integration (C-c c)           |
-| claude-code-ide      | Claude Code IDE tools (C-c C-')           |
-| monet                | Monet utilities                            |
+| Package             | Purpose                               |
+|:--------------------|:--------------------------------------|
+| treemacs            | Tree file explorer (F9)               |
+| treemacs-projectile | Projectile integration for treemacs   |
+| projectile          | Project management (C-c p)            |
+| magit               | Git interface                         |
+| company             | In-buffer completion                  |
+| eglot               | LSP client (clangd for C/C++)         |
+| clang-format        | C/C++ code formatting (C-c f)         |
+| cmake-mode          | CMake syntax support                  |
+| multiple-cursors    | Edit multiple lines/matches at once   |
+| which-key           | Keybinding discovery popups           |
+| flyspell            | Spell checking (aspell)               |
+| markdown-mode       | Markdown editing (pandoc)             |
+| org / org-modern    | Notes, literate programming, planning |
+| zenburn-theme       | Color theme                           |
+| claude-code         | Claude Code integration (C-c c)       |
+| claude-code-ide     | Claude Code IDE tools (C-c C-')       |
+| monet               | Monet utilities                       |
 
 ## Theme
 
