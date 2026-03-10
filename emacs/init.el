@@ -321,7 +321,8 @@
 (defun cmake-compile-with-preset ()
   "Configure and build a CMake project, prompting for a preset."
   (interactive)
-  (let* ((presets (cmake--read-presets))
+  (let* ((default-directory (or (projectile-project-root) default-directory))
+         (presets (cmake--read-presets))
          (preset (if presets
                      (completing-read "CMake preset: " presets nil nil)
                    (read-string "CMake preset: ")))
@@ -333,7 +334,8 @@
 (defun cmake-build-with-preset ()
   "Build a CMake project, prompting for a preset (skip configure)."
   (interactive)
-  (let* ((presets (cmake--read-presets))
+  (let* ((default-directory (or (projectile-project-root) default-directory))
+         (presets (cmake--read-presets))
          (preset (if presets
                      (completing-read "CMake build preset: " presets nil nil)
                    (read-string "CMake build preset: ")))
