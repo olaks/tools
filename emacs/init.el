@@ -100,7 +100,7 @@
 (global-set-key [f5] 'cmake-compile-with-preset)
 (global-set-key [S-f5] 'cmake-build-with-preset)
 (global-set-key [f6] 'conan-install)
-;;(global-set-key [f7] 'visit-tags-table)
+(global-set-key [f7] 'xref-find-references)  ; Find all instances of symbol at point
 (global-set-key [f8] 'add-change-log-entry-other-window)
 (global-set-key [f9] 'treemacs)
 

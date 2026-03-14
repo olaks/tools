@@ -101,7 +101,8 @@ Both prompt with completion for available preset names.
 | F4   | find-file                          |
 | F5   | CMake configure + build (preset)   |
 | S-F5 | CMake build only (preset)          |
-| F6   | visit-tags-table                   |
+| F6   | conan-install                      |
+| F7   | xref-find-references (find symbol) |
 | F8   | add-change-log-entry               |
 | F9   | treemacs                           |
 
@@ -133,6 +134,19 @@ To add cursors on adjacent lines (like CLion's Ctrl+Ctrl+arrows):
 2. Use `Up`/`Down` arrow keys to add cursors on adjacent lines
 3. Start typing — all cursors edit simultaneously
 4. `C-g` to exit multiple cursors mode
+
+### Symbol Navigation (xref + eglot)
+
+Find references, jump to definitions, and navigate symbols using eglot's LSP integration:
+
+| Key  | Command                | Action                                         |
+|:-----|:-----------------------|:-----------------------------------------------|
+| F7   | `xref-find-references` | Find all instances of symbol at point (new window) |
+| M-.  | `xref-find-definitions`| Jump to definition of symbol at point          |
+| M-,  | `xref-go-back`         | Jump back after following a definition         |
+| M-?  | `xref-find-references` | Same as F7 (built-in default)                  |
+
+Results appear in an xref buffer — click or press `RET` on any match to jump to it.
 
 ### Navigation (Keypad)
 
