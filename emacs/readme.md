@@ -2,6 +2,7 @@
 # Emacs Setup (Emacs 30+)
 
 Custom Emacs configuration focused on C/C++ development with CMake, clangd, and tree-sitter.
+See also [emacsdocs.org](http://emacsdocs.org)
 
 ## Quick Start
 
